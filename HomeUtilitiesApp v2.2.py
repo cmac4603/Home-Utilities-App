@@ -38,7 +38,7 @@ class HomeScreen(GridLayout, Screen):
         vibrator.vibrate(0.1)
 
 class BelGenLiveGraph(Screen):
-    return vibrator.vibrate(0.1)
+    pass
 
 def callbackgraph(instance):
     sm.current = 'BElGenLiveGraph'

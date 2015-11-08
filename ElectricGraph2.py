@@ -1,7 +1,5 @@
-from math import sin
 from kivy.app import App
 from kivy.garden.graph import Graph, MeshLinePlot
-from get_v import getvoltages
 
 class ElectricGraph2(App):
     def build(self):
@@ -10,7 +8,7 @@ class ElectricGraph2(App):
         graph = Graph(xlabel='X', ylabel='Y', x_ticks_minor=5,
                       x_ticks_major=25, y_ticks_major=1,
                       y_grid_label=True, x_grid_label=True, padding=5,
-                      x_grid=True, y_grid=True, xmin=-0, xmax=100, ymin=-1, ymax=1)
+                      x_grid=True, y_grid=True, xmin=-0, xmax=10, ymin=-12, ymax=12)
         plot = MeshLinePlot(color=[1, 0, 0, 1])
         with open("adclog.txt") as fh:
             coords = []
@@ -22,5 +20,3 @@ class ElectricGraph2(App):
         plot.points = coords
         graph.add_plot(plot)
         return graph
-
-ElectricGraph2().run()
