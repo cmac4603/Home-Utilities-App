@@ -58,7 +58,7 @@ ScreenManagement:
     NavBar:
         id: navbar
     BoxLayout:
-        padding: 10,200,10,200
+        padding: 10,300,10,300
         Button:
             background_normal: 'belgen-button.png'
             on_press: app.root.current = 'belgen'
@@ -102,7 +102,7 @@ ScreenManagement:
     pos_hint: {'top':1}
     ActionView:
         ActionPrevious:
-            title: 'Home Utilities v2.3.7'
+            title: 'Home Utilities v2.3.8'
             app_icon: 'MB__home.png'
             with_previous: False
             on_release: root.go_back()

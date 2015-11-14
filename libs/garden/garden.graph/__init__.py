@@ -1117,7 +1117,7 @@ class SmoothLinePlot(Plot):
                 use_parent_projection=True)
         with self._grc:
             self._gcolor = Color(*self.color)
-            self._gline = Line(points=[], cap='none', width=2.,
+            self._gline = Line(points=[], cap='none', width=4.,
                     texture=SmoothLinePlot._texture)
 
         return [self._grc]

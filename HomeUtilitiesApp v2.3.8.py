@@ -3,7 +3,7 @@ from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.actionbar import ActionBar
 from kivy.properties import ObjectProperty
-from kivy.garden.graph import Graph, MeshLinePlot
+from kivy.garden.graph import Graph, SmoothLinePlot
 
 class MenuScreen(Screen):
     actionbar = ObjectProperty()
@@ -16,7 +16,7 @@ class BElGenLiveGraph(Screen):
                       y_grid_label=True, x_grid_label=True, padding=5,
                       x_grid=True, y_grid=True, xmin=-0, xmax=10, ymin=-12,
                       ymax=12)
-        plot = MeshLinePlot(color=[1, 0, 0, 1])
+        plot = SmoothLinePlot(color=[0.49, 0.98, 1, 1])
         with open("adclog.txt") as fh:
             coords = []
             for line in fh:
