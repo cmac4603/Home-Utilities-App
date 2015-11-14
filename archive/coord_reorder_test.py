@@ -10,6 +10,6 @@ with open("adclog.txt") as fh:
         c = tuple(float(x) for x in line)  # Make the tuple
         coords.append(c)
 
-print coords
+print [coords]
 
 __author__ = 'colinmacrae'
