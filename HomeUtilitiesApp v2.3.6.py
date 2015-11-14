@@ -13,6 +13,9 @@ class BElGenLiveGraph(Screen):
     def call_graph(self):
         return ElectricGraph2().run()
 
+    def back_button(self, *args):
+        smsettings.current = 'menu'
+
 class Lights(Screen):
     def callback(self, instance, value):
             if value is True:
@@ -36,12 +39,17 @@ ScreenManagement:
 <MenuScreen>:
     name: 'menu'
     actionbar: navbar
+    Image:
+        source: 'home_wallpaper2.jpg'
+        allow_stretch: True
+        keep_ratio: False
     NavBar:
         id: navbar
     BoxLayout:
         padding: 10,200,10,200
         spacing: 10
         Button:
+            background_normal: 'lightning2.png'
             text: 'BElGen Live Graph'
             on_press: app.root.current = 'belgen'
         Button:
@@ -55,6 +63,10 @@ ScreenManagement:
 <BElGenLiveGraph>:
     name: 'belgen'
     on_enter: root.call_graph()
+    BoxLayout:
+        Button:
+            background_normal: 'black_wallpaper.jpg'
+            on_press: root.back_button()
 
 <Lights>:
     name: 'lights'
@@ -79,9 +91,9 @@ ScreenManagement:
 <NavBar>:
     pos_hint: {'top':1}
     ActionView:
-        app_icon: 'MB__home.png'
         ActionPrevious:
-            title: 'Home Utilities v2.3.5'
+            title: 'Home Utilities v2.3.6'
+            app_icon: 'MB__home.png'
             with_previous: False
             on_release: root.go_back()
         ActionOverflow:
@@ -100,11 +112,15 @@ ScreenManagement:
                 text: 'Btn4'
             ActionButton:
                 text: 'Exit'
+                on_press: app.exit_app()
 """ )
 
 class HomeUtilities(App):
     def build(self):
         return smsettings
+
+    def exit_app(self):
+        return exit().stop()
 
 if __name__=='__main__':
     HomeUtilities().run()
