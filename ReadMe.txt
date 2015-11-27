@@ -1,4 +1,4 @@
-#usr/bin/python
+#!usr/bin/python
 
 HomeUtilitiesApp v0.1.2.py:
 	Working buttons that print to terminal when clicked

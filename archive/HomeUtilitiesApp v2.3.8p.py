@@ -58,7 +58,7 @@ ScreenManagement:
     NavBar:
         id: navbar
     BoxLayout:
-        padding: 10,300,10,300
+        padding: 10,130,10,130
         Button:
             background_normal: 'belgen-button.png'
             on_press: app.root.current = 'belgen'
@@ -84,7 +84,7 @@ ScreenManagement:
     NavBar:
         id: navbar
     BoxLayout:
-        padding: 150,250,150,250
+        padding: 100,200,100,200
         Switch:
             id: light_switch1
             on_active: root.callback(*args)

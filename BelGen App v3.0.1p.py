@@ -1,9 +1,38 @@
+from kivy.support import install_twisted_reactor
+install_twisted_reactor()
+
+from twisted.internet import reactor, protocol
+
+class EchoClient(protocol.Protocol):
+    def connectionMade(self):
+        self.factory.app.on_connection(self.transport)
+
+    def dataReceived(self, data):
+        self.factory.app.print_message(data)
+
+
+class EchoFactory(protocol.ClientFactory):
+    protocol = EchoClient
+
+    def __init__(self, app):
+        self.app = app
+
+    def clientConnectionLost(self, conn, reason):
+        self.app.print_message("connection lost")
+
+    def clientConnectionFailed(self, conn, reason):
+        self.app.print_message("connection failed")
+
+
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.actionbar import ActionBar
 from kivy.properties import ObjectProperty
 from kivy.garden.graph import Graph, SmoothLinePlot
+from kivy.uix.label import Label
+from kivy.uix.textinput import TextInput
+from kivy.uix.boxlayout import BoxLayout
 
 class MenuScreen(Screen):
     actionbar = ObjectProperty()
@@ -28,12 +57,38 @@ class BElGenLiveGraph(Screen):
         graph.add_plot(plot)
         self.add_widget(graph)
 
-class Lights(Screen):
-    def callback(self, instance, value):
-            if value is True:
-                print instance, 'is on!'
-            elif value is False:
-                print instance, 'is off!'
+class Lights(Screen, BoxLayout):
+    connection = None
+
+    def __init__(self, **kwargs):
+        super(Lights, self).__init__(**kwargs)
+        print ("setup_switches called")
+        self.connect_to_server()
+        self.textbox = TextInput(size_hint_y=.1, multiline=False)
+        self.textbox.bind(on_text_validate=self.send_message)
+        self.label = Label(text='connecting...\n')
+        self.add_widget(self.label)
+        self.add_widget(self.textbox)
+
+
+    def send_message(self, *args):
+        msg = self.textbox.text
+        if msg and self.connection:
+            self.connection.write(str(self.textbox.text))
+            self.textbox.text = ""
+
+    def on_connection(self, connection):
+        self.print_message("connected succesfully!")
+        self.connection = connection
+
+    def connect_to_server(self):
+        reactor.connectTCP('localhost', 8000, EchoFactory(self))
+
+    def print_message(self, msg):
+        self.label.text += msg + "\n"
+
+class RoomTemp(Screen):
+    pass
 
 class NavBar(ActionBar):
     def go_back(self, *args):
@@ -47,6 +102,7 @@ ScreenManagement:
     MenuScreen:
     BElGenLiveGraph:
     Lights:
+    RoomTemp:
 
 <MenuScreen>:
     name: 'menu'
@@ -58,7 +114,7 @@ ScreenManagement:
     NavBar:
         id: navbar
     BoxLayout:
-        padding: 10,200,10,200
+        padding: 10,130,10,130
         Button:
             background_normal: 'belgen-button.png'
             on_press: app.root.current = 'belgen'
@@ -68,9 +124,8 @@ ScreenManagement:
             background_normal: 'light-bulb.png'
             on_press: app.root.current = 'lights'
         Button:
-            background_normal: 'none.png'
-            text: 'None'
-            color: (1,0,0,1)
+            background_normal: 'temp.png'
+            on_press: app.root.current = 'temp'
 
 <BElGenLiveGraph>:
     name: 'belgen'
@@ -83,26 +138,23 @@ ScreenManagement:
     actionbar: navbar
     NavBar:
         id: navbar
-    BoxLayout:
-        padding: 150,250,150,250
-        Switch:
-            id: light_switch1
-            on_active: root.callback(*args)
-        Switch:
-            id: light_switch2
-            on_active: root.callback(*args)
-        Switch:
-            id: light_switch3
-            on_active: root.callback(*args)
-        Switch:
-            id: light_switch4
-            on_active: root.callback(*args)
+
+<RoomTemp>:
+    name: 'temp'
+    actionbar: navbar
+    NavBar:
+        id: navbar
+    Label:
+        font_name: 'DroidSans'
+        font_size: 128
+        text: '00.0' + u'\u00B0' + 'C'
+
 
 <NavBar>:
     pos_hint: {'top':1}
     ActionView:
         ActionPrevious:
-            title: 'Home Utilities v2.3.7'
+            title: 'BelGen v3.0.1p'
             app_icon: 'MB__home.png'
             with_previous: False
             on_release: root.go_back()
@@ -126,6 +178,8 @@ ScreenManagement:
 """ )
 
 class HomeUtilities(App):
+    connection = None
+
     def build(self):
         return smsettings
 
