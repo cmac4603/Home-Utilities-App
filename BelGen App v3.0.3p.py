@@ -30,9 +30,6 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.actionbar import ActionBar
 from kivy.properties import ObjectProperty
 from kivy.garden.graph import Graph, SmoothLinePlot
-from kivy.uix.label import Label
-from kivy.uix.textinput import TextInput
-from kivy.uix.boxlayout import BoxLayout
 
 class MenuScreen(Screen):
     actionbar = ObjectProperty()
@@ -68,17 +65,13 @@ class Lights(Screen):
         self.print_message("connected succesfully!")
         self.connection = connection
 
-    def send_message1(self, *args):
-        self.connection.write('lightswitch1')
-
-    def send_message2(self, *args):
-        self.connection.write('lightswitch2')
-
-    def send_message3(self, *args):
-        self.connection.write('lightswitch3')
-
-    def send_message4(self, *args):
-        self.connection.write('lightswitch4')
+    def send_message(self, instance, value):
+        if value is True:
+            name = str(instance)
+            self.connection.write(name + ' on')
+        elif value is False:
+            name = str(instance)
+            self.connection.write(name + ' off')
 
     def print_message(self, msg):
         print(msg + "\n")
@@ -139,16 +132,16 @@ ScreenManagement:
         padding: 100,200,100,200
         Switch:
             id: ls1
-            on_active: root.send_message1()
+            on_active: root.send_message(*args)
         Switch:
             id: ls2
-            on_active: root.send_message2()
+            on_active: root.send_message(*args)
         Switch:
             id: ls3
-            on_active: root.send_message3()
+            on_active: root.send_message(*args)
         Switch:
             id: ls4
-            on_active: root.send_message4()
+            on_active: root.send_message(*args)
 
 <RoomTemp>:
     name: 'temp'
