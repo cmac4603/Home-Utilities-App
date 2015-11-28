@@ -27,9 +27,11 @@ class EchoFactory(protocol.ClientFactory):
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.uix.actionbar import ActionBar
+from kivy.uix.actionbar import ActionBar, ActionItem
 from kivy.properties import ObjectProperty
 from kivy.garden.graph import Graph, SmoothLinePlot
+from kivy.clock import Clock
+import time
 
 class MenuScreen(Screen):
     actionbar = ObjectProperty()
@@ -65,12 +67,12 @@ class Lights(Screen):
         self.print_message("connected succesfully!")
         self.connection = connection
 
-    def send_message(self, instance, value):
+    def send_message(self, id, instance, value):
         if value is True:
-            name = str(instance)
+            name = str(id)
             self.connection.write(name + ' on')
         elif value is False:
-            name = str(instance)
+            name = str(id)
             self.connection.write(name + ' off')
 
     def print_message(self, msg):
@@ -82,6 +84,11 @@ class RoomTemp(Screen):
 class NavBar(ActionBar):
     def go_back(self, *args):
         smsettings.current = 'menu'
+
+    def time_piece(text):
+        text = time.asctime()
+        Clock.schedule_interval(text, 1)
+        return text
 
 class ScreenManagement(ScreenManager):
     pass
@@ -132,16 +139,16 @@ ScreenManagement:
         padding: 100,200,100,200
         Switch:
             id: ls1
-            on_active: root.send_message(*args)
+            on_active: root.send_message('ls1', *args)
         Switch:
             id: ls2
-            on_active: root.send_message(*args)
+            on_active: root.send_message('ls2', *args)
         Switch:
             id: ls3
-            on_active: root.send_message(*args)
+            on_active: root.send_message('ls3', *args)
         Switch:
             id: ls4
-            on_active: root.send_message(*args)
+            on_active: root.send_message('ls4', *args)
 
 <RoomTemp>:
     name: 'temp'
@@ -158,7 +165,7 @@ ScreenManagement:
     pos_hint: {'top':1}
     ActionView:
         ActionPrevious:
-            title: 'BelGen v3.0.3p'
+            title: 'BelGen v3.0.4p'
             app_icon: 'MB__home.png'
             with_previous: False
             on_release: root.go_back()
@@ -173,12 +180,9 @@ ScreenManagement:
         ActionGroup:
             text: 'Group1'
             ActionButton:
-                text: 'Btn3'
-            ActionButton:
-                text: 'Btn4'
-            ActionButton:
                 text: 'Exit'
                 on_press: app.exit_app()
+
 """ )
 
 class HomeUtilities(App):
