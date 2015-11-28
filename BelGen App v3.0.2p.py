@@ -68,8 +68,17 @@ class Lights(Screen):
         self.print_message("connected succesfully!")
         self.connection = connection
 
-    def send_message(self, *args):
+    def send_message1(self, *args):
         self.connection.write('lightswitch1')
+
+    def send_message2(self, *args):
+        self.connection.write('lightswitch2')
+
+    def send_message3(self, *args):
+        self.connection.write('lightswitch3')
+
+    def send_message4(self, *args):
+        self.connection.write('lightswitch4')
 
     def print_message(self, msg):
         print(msg + "\n")
@@ -130,7 +139,16 @@ ScreenManagement:
         padding: 100,200,100,200
         Switch:
             id: ls1
-            on_active: root.send_message()
+            on_active: root.send_message1()
+        Switch:
+            id: ls2
+            on_active: root.send_message2()
+        Switch:
+            id: ls3
+            on_active: root.send_message3()
+        Switch:
+            id: ls4
+            on_active: root.send_message4()
 
 <RoomTemp>:
     name: 'temp'
@@ -147,7 +165,7 @@ ScreenManagement:
     pos_hint: {'top':1}
     ActionView:
         ActionPrevious:
-            title: 'BelGen v3.0.1p'
+            title: 'BelGen v3.0.2p'
             app_icon: 'MB__home.png'
             with_previous: False
             on_release: root.go_back()

@@ -1,4 +1,8 @@
+<<<<<<< HEAD:ReadMe.txt
 #!usr/bin/python
+=======
+#Check out the related webpage [here](http://www.belgen.co.uk)
+>>>>>>> origin/master:ReadMe.md
 
 HomeUtilitiesApp v0.1.2.py:
 	Working buttons that print to terminal when clicked
@@ -39,3 +43,5 @@ HomeUtilitiesApp v2.2.py:
 
 logvoltage.py:
 	ABElectronics ADCPi recording voltage to file (for Raspberry Pi)
+
+##To be updated
