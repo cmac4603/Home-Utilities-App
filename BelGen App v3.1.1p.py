@@ -29,9 +29,9 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.actionbar import ActionBar, ActionItem
 from kivy.properties import ObjectProperty
 from kivy.garden.graph import Graph, SmoothLinePlot
-from kivy.core.audio import SoundLoader
 from kivy.factory import Factory
-from pygame import mixer
+from kivy.core.audio import SoundLoader
+import os
 
 class MenuScreen(Screen):
     actionbar = ObjectProperty()
@@ -85,11 +85,9 @@ class LoadMusic(Screen):
     text_input = ObjectProperty(None)
 
     def load(self, path, filename):
-        mixer.init()
-	musicfile = str(filename)[3:][:-2]
-        mixer.music.load(musicfile)
-	while mixer.music.get_busy() == True:
-		continue
+    	musicfile = str(filename)[3:][:-2]
+        music = SoundLoader.load(musicfile)
+        music.play()
 
     def cancel(self):
         smsettings.current = 'menu'
@@ -186,7 +184,7 @@ ScreenManagement:
     pos_hint: {'top':1}
     ActionView:
         ActionPrevious:
-            title: 'BelGen v3.0.4p'
+            title: 'BelGen v3.1.1p'
             app_icon: 'MB__home.png'
             with_previous: False
             on_release: root.go_back()

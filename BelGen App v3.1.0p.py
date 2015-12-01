@@ -187,7 +187,7 @@ ScreenManagement:
     pos_hint: {'top':1}
     ActionView:
         ActionPrevious:
-            title: 'BelGen v3.0.4p'
+            title: 'BelGen v3.1.0p'
             app_icon: 'MB__home.png'
             with_previous: False
             on_release: root.go_back()
