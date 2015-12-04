@@ -33,6 +33,9 @@ from kivy.core.audio import SoundLoader
 from kivy.factory import Factory
 from kivy.clock import Clock
 import pyowm
+from ABE_ADCPi import ADCPi
+from ABE_helpers import ABEHelpers
+
 
 class MenuScreen(Screen):
     actionbar = ObjectProperty()
@@ -61,7 +64,7 @@ class Lights(Screen):
     connection = None
 
     def connect_to_server(self):
-        reactor.connectTCP('192.168.1.3', 8000, EchoFactory(self))
+        reactor.connectTCP('localhost', 8000, EchoFactory(self))
 
     def on_connection(self, connection):
         self.print_message("connected succesfully!")
@@ -83,6 +86,7 @@ class RoomTemp(Screen):
 
 class LoadMusic(Screen):
     loadfile = ObjectProperty(None)
+    text_input = ObjectProperty(None)
 
     def load(self, path, filename):
         musicfile = str(filename)[3:][:-2]
@@ -104,10 +108,9 @@ class Weather(Screen):
         i = w.get_weather_icon_name()
         addr = str("http://openweathermap.org/img/w/" + i + ".png")
         print(addr)
+        Clock.schedule_interval(lambda dt: self.ids.wxlabel.source, 15)
         return addr
 
-    def update(self):
-        Clock.schedule_interval(self.ids.wxlabel.source = 'wx.png', 45)
     #def update(self):
         #self.wx_forecast()
         #Clock.schedule_interval(lambda dt: self.ids.wxlabel, 30)
@@ -138,7 +141,7 @@ ScreenManagement:
     NavBar:
         id: navbar
     GridLayout:
-        padding: 60,75,60,0
+        padding: 10,50,10,10
         rows: 2
         columns: 3
         Button:
@@ -193,7 +196,7 @@ ScreenManagement:
         id: navbar
     Label:
         font_size: 128
-        text: '00.0' + u'\u00B0' + 'C'
+        text: root.get_temp()
 
 <LoadMusic>:
     name: 'music'
@@ -203,7 +206,7 @@ ScreenManagement:
         orientation: "vertical"
         FileChooserIconView:
             id: filechooser
-            path: '~/Downloads'
+            path: '~/Downloads/Music'
             on_submit: filechooser.selection, root.load(filechooser.path, filechooser.selection)
     NavBar:
         id: navbar
@@ -211,7 +214,6 @@ ScreenManagement:
 <Weather>:
     name: 'weather'
     actionbar: navbar
-    source: root.update()
     FloatLayout:
         BoxLayout:
             AsyncImage:
@@ -233,7 +235,7 @@ ScreenManagement:
     pos_hint: {'top':1}
     ActionView:
         ActionPrevious:
-            title: 'BelGen v3.1.3p'
+            title: 'BelGen v3.1.5p'
             app_icon: 'MB__home.png'
             with_previous: False
             on_release: root.go_back()

@@ -98,19 +98,7 @@ class Weather(Screen):
     addr = StringProperty()
 
     def wx_forecast(self):
-        owm = pyowm.OWM('fa7813518ed203b759f116a3bac9bcce')
-        observation = owm.weather_at_place('London,uk')
-        w = observation.get_weather()
-        i = w.get_weather_icon_name()
-        addr = str("http://openweathermap.org/img/w/" + i + ".png")
-        print(addr)
-        return addr
-
-    def update(self):
-        Clock.schedule_interval(self.ids.wxlabel.source = 'wx.png', 45)
-    #def update(self):
-        #self.wx_forecast()
-        #Clock.schedule_interval(lambda dt: self.ids.wxlabel, 30)
+        return 'clouds.png'
 
 class NavBar(ActionBar):
     def go_back(self, *args):
@@ -138,7 +126,7 @@ ScreenManagement:
     NavBar:
         id: navbar
     GridLayout:
-        padding: 60,75,60,0
+        padding: 50,50,50,0
         rows: 2
         columns: 3
         Button:
@@ -211,7 +199,6 @@ ScreenManagement:
 <Weather>:
     name: 'weather'
     actionbar: navbar
-    source: root.update()
     FloatLayout:
         BoxLayout:
             AsyncImage:
