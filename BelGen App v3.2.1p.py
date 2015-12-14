@@ -67,7 +67,7 @@ class Lights(Screen):
     connection = None
 
     def connect_to_server(self):
-        reactor.connectTCP('192.168.', 8000, EchoFactory(self))
+        reactor.connectTCP('192.168.1.3', 8000, EchoFactory(self))
 
     def on_connection(self, connection):
         self.print_message("connected succesfully!")
@@ -85,11 +85,7 @@ class Lights(Screen):
         print(msg + "\n")
 
 class RoomTemp(Screen):
-
-    def get_temp(self):
-        temp = '0.00'
-        return temp
-
+    pass
 
 class LoadMusic(Screen):
     loadfile = ObjectProperty(None)
@@ -163,14 +159,10 @@ ScreenManagement:
 <MenuScreen>:
     name: 'menu'
     actionbar: navbar
-    Image:
-        source: 'home_wallpaper2.jpg'
-        allow_stretch: True
-        keep_ratio: False
     NavBar:
         id: navbar
     GridLayout:
-        padding: 10,50,10,10
+        padding: 60,75,60,0
         rows: 2
         columns: 3
         Button:
@@ -225,7 +217,7 @@ ScreenManagement:
         id: navbar
     Label:
         font_size: 128
-        text: root.get_temp()
+        text: '00.0' + u'\u00B0' + 'C'
 
 <LoadMusic>:
     name: 'music'
@@ -297,7 +289,7 @@ ScreenManagement:
     pos_hint: {'top':1}
     ActionView:
         ActionPrevious:
-            title: 'BelGen v3.1.5p'
+            title: 'BelGen v3.2.1p'
             app_icon: 'MB__home.png'
             with_previous: False
             on_release: root.go_back()
