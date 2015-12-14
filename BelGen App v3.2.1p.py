@@ -25,14 +25,20 @@ class EchoFactory(protocol.ClientFactory):
 
 from kivy.app import App
 from kivy.lang import Builder
+from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.actionbar import ActionBar, ActionItem
 from kivy.properties import ObjectProperty, StringProperty
 from kivy.garden.graph import Graph, SmoothLinePlot
 from kivy.core.audio import SoundLoader
 from kivy.factory import Factory
-from kivy.clock import Clock
+# from kivy.clock import Clock
+from kivy.uix.popup import Popup
 import pyowm
+
+owm = pyowm.OWM('fa7813518ed203b759f116a3bac9bcce')
+observation = owm.weather_at_place('London,uk')
+w = observation.get_weather()
 
 class MenuScreen(Screen):
     actionbar = ObjectProperty()
@@ -61,7 +67,7 @@ class Lights(Screen):
     connection = None
 
     def connect_to_server(self):
-        reactor.connectTCP('192.168.1.3', 8000, EchoFactory(self))
+        reactor.connectTCP('192.168.', 8000, EchoFactory(self))
 
     def on_connection(self, connection):
         self.print_message("connected succesfully!")
@@ -79,10 +85,15 @@ class Lights(Screen):
         print(msg + "\n")
 
 class RoomTemp(Screen):
-    pass
+
+    def get_temp(self):
+        temp = '0.00'
+        return temp
+
 
 class LoadMusic(Screen):
     loadfile = ObjectProperty(None)
+    text_input = ObjectProperty(None)
 
     def load(self, path, filename):
         musicfile = str(filename)[3:][:-2]
@@ -95,22 +106,43 @@ class LoadMusic(Screen):
 Factory.register('LoadMusic', cls=LoadMusic)
 
 class Weather(Screen):
-    wx_forecast = StringProperty(None)
 
     def wx_forecast(self):
-        owm = pyowm.OWM('fa7813518ed203b759f116a3bac9bcce')
-        observation = owm.weather_at_place('London,uk')
-        w = observation.get_weather()
         i = w.get_weather_icon_name()
         addr = str("http://openweathermap.org/img/w/" + i + ".png")
         print(addr)
         return addr
 
-    def update(self):
-        Clock.schedule_interval(self.ids.wxlabel.source.wx_forecast, 45)
-    #def update(self):
-        #self.wx_forecast()
-        #Clock.schedule_interval(lambda dt: self.ids.wxlabel, 30)
+    def dismiss_popup(self):
+        self._popup.dismiss()
+
+    def more_details(self):
+        content = DetailDialog(cancel=self.dismiss_popup)
+        self._popup = Popup(title="More details", content=content,
+                            size_hint=(0.9, 0.9))
+        self._popup.open()
+
+
+class DetailDialog(FloatLayout):
+    cancel = ObjectProperty(None)
+
+    def temp_details(self):
+        wtemp = str(w.get_temperature('celsius'))
+        wtemp2 = wtemp.replace("'", "")
+        return wtemp2.strip("{}")
+
+    def wind_details(self):
+        wwind = str(w.get_wind())
+        wwind2 = wwind.replace("'", "")
+        wwind3 = wwind2.replace("u", "")
+        return wwind3.strip("{}")
+
+    def humi_details(self):
+        whumi = str(w.get_humidity())
+        whumi2 = whumi.replace("'", "")
+        return whumi2.strip("{}")
+
+Factory.register('DetailDialog', cls=DetailDialog)
 
 class NavBar(ActionBar):
     def go_back(self, *args):
@@ -138,7 +170,7 @@ ScreenManagement:
     NavBar:
         id: navbar
     GridLayout:
-        padding: 60,75,60,0
+        padding: 10,50,10,10
         rows: 2
         columns: 3
         Button:
@@ -193,7 +225,7 @@ ScreenManagement:
         id: navbar
     Label:
         font_size: 128
-        text: '00.0' + u'\u00B0' + 'C'
+        text: root.get_temp()
 
 <LoadMusic>:
     name: 'music'
@@ -203,19 +235,26 @@ ScreenManagement:
         orientation: "vertical"
         FileChooserIconView:
             id: filechooser
-            path: '~/Downloads'
+            path: '~/Downloads/Music'
             on_submit: filechooser.selection, root.load(filechooser.path, filechooser.selection)
     NavBar:
         id: navbar
 
 <Weather>:
     name: 'weather'
-    actionbar: navbar
-    source: root.update()
+    canvas:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
     FloatLayout:
-        BoxLayout:
+        GridLayout:
+            rows: 1
+            padding: 200
             AsyncImage:
                 id: wxlabel
+                allow_stretch: True
                 source: root.wx_forecast()
         BoxLayout:
             size_hint_y: None
@@ -225,15 +264,40 @@ ScreenManagement:
                 on_press:
             Button:
                 text: 'More Details'
-                on_release:
+                on_release: root.more_details()
     NavBar:
         id: navbar
+
+<DetailDialog>:
+    GridLayout:
+        cols: 1
+        size: root.size
+        pos: root.pos
+        Label:
+            pos: root.pos
+            font_size: 24
+            text: root.temp_details()
+        Label:
+            pos: root.pos
+            font_size: 24
+            text: 'wind ' + root.wind_details()
+        Label:
+            pos: root.pos
+            font_size: 24
+            text: 'humidity ' + root.humi_details()
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Back"
+                on_release: root.cancel()
 
 <NavBar>:
     pos_hint: {'top':1}
     ActionView:
         ActionPrevious:
-            title: 'BelGen v3.1.3p'
+            title: 'BelGen v3.1.5p'
             app_icon: 'MB__home.png'
             with_previous: False
             on_release: root.go_back()
